@@ -1,4 +1,0 @@
-spring.datasource.url: jdbc:postgresql://localhost/postcreater
-spring.datasource.username: postgres
-spring.datasource.password: 231085
-spring.jpa.generate-ddl: true

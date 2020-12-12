@@ -1,0 +1,12 @@
+spring.datasource.url: jdbc:postgresql://localhost/postcreater
+spring.datasource.username: postgres
+spring.datasource.password: 231085
+spring.jpa.generate-ddl: true
+spring.jpa.hibernate.ddl-auto: validate
+
+blog.title: PostCreater
+blog.subtitle: Someshit
+blog.phone: 112
+blog.email: Alexandrcaesar@yandex.ru
+blog.copyright: Alex Yutsikov
+blog.copyrightFrom: 2020
