@@ -3,6 +3,7 @@ package main.api.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import main.model.Posts;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostResponse {
@@ -13,6 +14,7 @@ public class PostResponse {
 
     public PostResponse(Integer count) {
         this.count = count;
+        postsList = new ArrayList<>();
     }
 
     public Integer getCount() {
