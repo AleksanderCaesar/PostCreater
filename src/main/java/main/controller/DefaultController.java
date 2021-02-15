@@ -17,7 +17,6 @@ public class DefaultController {
     @GetMapping("/")
     public String index(Model model)
     {
-
         return "index";
     }
 }

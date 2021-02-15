@@ -22,7 +22,7 @@ public class User
     private String code;
     private String photo;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Posts> posts;
+    private Set<Posts> listPosts;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<PostVotes> postVotes;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -95,12 +95,12 @@ public class User
         this.photo = photo;
     }
 
-    public Set<Posts> getPosts() {
-        return posts;
+    public Set<Posts> getListPosts() {
+        return listPosts;
     }
 
-    public void setPosts(Set<Posts> posts) {
-        this.posts = posts;
+    public void setListPosts(Set<Posts> posts) {
+        this.listPosts = posts;
     }
 
     public Set<PostVotes> getPostVotes() {
@@ -109,5 +109,22 @@ public class User
 
     public void setPostVotes(Set<PostVotes> postVotes) {
         this.postVotes = postVotes;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", isModerator=" + isModerator +
+                ", regTime=" + regTime +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", code='" + code + '\'' +
+                ", photo='" + photo + '\'' +
+                ", listPosts=" + listPosts +
+                ", postVotes=" + postVotes +
+                ", postComments=" + postComments +
+                '}';
     }
 }

@@ -137,4 +137,22 @@ public class Posts
     public void setTagToPosts(Set<TagToPost> tagToPosts) {
         this.tagToPosts = tagToPosts;
     }
+
+    @Override
+    public String toString() {
+        return "Posts{" +
+                "id=" + id +
+                ", isActive=" + isActive +
+                ", moderationStatus=" + moderationStatus +
+                ", moderatorId=" + moderatorId +
+                ", user=" + user +
+                ", time=" + time +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", viewCount=" + viewCount +
+                ", postVotes=" + postVotes +
+                ", postComments=" + postComments +
+                ", tagToPosts=" + tagToPosts +
+                '}';
+    }
 }

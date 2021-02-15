@@ -1,6 +1,6 @@
 package main.controller;
 
-import main.api.response.PostResponse;
+import main.api.response.PostsResponse;
 import main.service.PostService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +17,12 @@ public class ApiPostController {
     }
 
     @GetMapping("/post")
-    private PostResponse getPosts(){
-        PostResponse postResponse = postService.getPostResponse();
-        if(postResponse.getPostsList().isEmpty()){
-            return new PostResponse(0);
+    private PostsResponse getPosts(){
+        PostsResponse postsResponse = postService.getPostResponse();
+        System.out.println(postsResponse.toString());
+        if(postsResponse.getPostsList().isEmpty()){
+            return new PostsResponse(0);
         }
-        else return postResponse;
+        else return postsResponse;
     }
 }

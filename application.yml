@@ -2,7 +2,7 @@ spring.datasource.url: jdbc:postgresql://localhost/postcreater
 spring.datasource.username: postgres
 spring.datasource.password: 231085
 spring.jpa.generate-ddl: false
-spring.jpa.hibernate.ddl-auto: create
+spring.jpa.hibernate.ddl-auto: none
 spring.flyway.baselineOnMigrate: true
 
 blog.title: PostCreater
