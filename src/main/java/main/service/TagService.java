@@ -51,8 +51,8 @@ public class TagService
         }
         double k = 0l;
         try {
-            Integer max = Collections.max(tagCount);
-            int size = tagToPostList.size();
+            double max = Collections.max(tagCount);
+            double size = tagToPostList.size();
             k = 1/(max/size);
         } catch (ArithmeticException ex){
             ex.printStackTrace();
@@ -61,6 +61,10 @@ public class TagService
     }
 
     public double getWeightOfTag(String name){
-        return tagToPostRepo.getTagToPostByTagName(name).size()/tagToPostRepo.getTagToPostList().size();
+        double weight = 0;
+        double tagsCountByName = tagToPostRepo.getTagToPostByTagName(name).size();
+        double allCount = tagToPostRepo.getTagToPostList().size();
+        weight = tagsCountByName / allCount;
+        return weight;
     }
 }
