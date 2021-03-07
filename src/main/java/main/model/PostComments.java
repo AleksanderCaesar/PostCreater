@@ -14,7 +14,7 @@ public class PostComments
     private Integer parentId;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
-    private Posts postId;
+    private Post postId;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
@@ -40,11 +40,11 @@ public class PostComments
         this.parentId = parentId;
     }
 
-    public Posts getPostId() {
+    public Post getPostId() {
         return postId;
     }
 
-    public void setPostId(Posts postId) {
+    public void setPostId(Post postId) {
         this.postId = postId;
     }
 

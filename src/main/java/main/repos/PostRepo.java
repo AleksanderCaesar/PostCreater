@@ -1,14 +1,15 @@
 package main.repos;
 
 
-import main.model.Posts;
+import main.model.Post;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface PostRepo extends CrudRepository<Posts, Integer> {
+public interface PostRepo extends CrudRepository<Post, Integer> {
 
-    @Query("from Posts")
-    List<Posts> getPosts();
+    @Query("from Post")
+    List<Post> getPosts();
+    Post getById(Integer id);
 }

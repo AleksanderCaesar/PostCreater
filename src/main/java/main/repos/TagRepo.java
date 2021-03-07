@@ -12,4 +12,5 @@ public interface TagRepo extends CrudRepository<Tags, Integer> {
 
     @Query("from Tags")
     List<Tags> getTags();
+
 }

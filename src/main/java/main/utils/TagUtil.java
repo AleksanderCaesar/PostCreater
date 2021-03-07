@@ -3,7 +3,7 @@ package main.utils;
 public class TagUtil
 {
     private String name;
-    private Integer weight;
+    private Double weight;
 
     public String getName() {
         return name;
@@ -13,11 +13,11 @@ public class TagUtil
         this.name = name;
     }
 
-    public Integer getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 }

@@ -16,7 +16,7 @@ public class PostVotes
     private User user;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
-    private Posts postId;
+    private Post postId;
     private Date time;
     private Integer value;
 
@@ -39,11 +39,11 @@ public class PostVotes
         this.user = user;
     }
 
-    public Posts getPostId() {
+    public Post getPostId() {
         return postId;
     }
 
-    public void setPostId(Posts postId) {
+    public void setPostId(Post postId) {
         this.postId = postId;
     }
 

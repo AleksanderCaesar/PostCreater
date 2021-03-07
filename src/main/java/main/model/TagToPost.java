@@ -11,7 +11,7 @@ public class TagToPost
     private Integer id;
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private Posts postId;
+    private Post postId;
     @ManyToOne
     @JoinColumn(name = "tag_id")
     private Tags tagId;
@@ -27,11 +27,11 @@ public class TagToPost
         this.id = id;
     }
 
-    public Posts getPostId() {
+    public Post getPostId() {
         return postId;
     }
 
-    public void setPostId(Posts postId) {
+    public void setPostId(Post postId) {
         this.postId = postId;
     }
 

@@ -37,10 +37,5 @@ public class ApiGeneralController
         return initResponse;
     }
 
-    @GetMapping("/tag")
-    private TagResponse getTags(){
-        return tagService.getTagList();
-    }
-
 
 }
