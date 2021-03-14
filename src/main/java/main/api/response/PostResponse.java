@@ -1,7 +1,5 @@
 package main.api.response;
 
-import main.model.UserIdNameResponse;
-
 public class PostResponse
 {
     private int id;
