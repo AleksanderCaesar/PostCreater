@@ -43,6 +43,7 @@ public class ApiPostController {
             return postService.getPostListResponse("recent", offset, limit);
         }
         PostListResponse searchPostResponse = new PostListResponse();
+        searchPostResponse = postService.findByQuery(query, offset, limit);
         return searchPostResponse;
     }
 

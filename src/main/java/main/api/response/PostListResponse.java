@@ -1,7 +1,6 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import main.model.Post;
 
 import java.util.ArrayList;
 import java.util.List;

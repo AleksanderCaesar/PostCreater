@@ -2,20 +2,18 @@ package main.service;
 
 import main.api.response.PostListResponse;
 import main.api.response.PostResponse;
+import main.api.response.UserIdNameResponse;
 import main.model.Post;
 import main.model.PostVotes;
-import main.api.response.UserIdNameResponse;
 import main.repos.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,33 +21,35 @@ public class PostService {
     @Autowired
     private PostRepo postRepo;
 
-    public PostListResponse getPostResponse(){
+    public PostListResponse getPostResponse(String mode, int offset, int limit){
         PostListResponse postListResponse = new PostListResponse();
-        Pageable page = PageRequest.of(0, 10, Sort.by("title"));
-        Page<Post> posts = postRepo.getPosts(page);
+        Page<Post> posts = getPosts(offset, limit);
         for(Post pst : posts){
-            PostResponse postResponse = new PostResponse();
-            postResponse.setId(pst.getId());
-            postResponse.setTimestamp(pst.getTime().getTime());
-            UserIdNameResponse user = new UserIdNameResponse();
-            user.setId(pst.getUser().getId());
-            user.setName(pst.getUser().getName());
-            postResponse.setUser(user);
-            postResponse.setTitle(pst.getTitle());
-            postResponse.setAnnounce(pst.getText());
-            postResponse.setLikeCount(getLikes(pst.getId()));
-            postResponse.setDislikeCount(getDislikes(pst.getId()));
-            postResponse.setViewCount(pst.getViewCount());
-            postListResponse.getPostsList().add(postResponse);
+            postListResponse.getPostsList().add(fillPostResponse(pst));
         }
-        postListResponse.setCount(postListResponse.getPostsList().size());
+        postListResponse.setCount((int) posts.getTotalElements());
 
         return postListResponse;
     }
 
-    public PostListResponse getPostListResponse(String mode, int offset, int limit) {
-    PostListResponse postListResponse = getPostResponse();
+    public PostResponse fillPostResponse(Post pst) {
+        PostResponse postResponse = new PostResponse();
+        postResponse.setId(pst.getId());
+        postResponse.setTimestamp(pst.getTime().getTime());
+        UserIdNameResponse user = new UserIdNameResponse();
+        user.setId(pst.getUser().getId());
+        user.setName(pst.getUser().getName());
+        postResponse.setUser(user);
+        postResponse.setTitle(pst.getTitle());
+        postResponse.setAnnounce(pst.getText());
+        postResponse.setLikeCount(getLikes(pst.getId()));
+        postResponse.setDislikeCount(getDislikes(pst.getId()));
+        postResponse.setViewCount(pst.getViewCount());
+        return postResponse;
+    }
 
+    public PostListResponse getPostListResponse(String mode, int offset, int limit) {
+    PostListResponse postListResponse = getPostResponse(mode, offset, limit);
 
         if(postListResponse.getPostsList().isEmpty()){
         return new PostListResponse();
@@ -101,7 +101,6 @@ public class PostService {
         return postListResponse;
     }
 
-
     public Integer getLikes(Integer id) {
         Post post = postRepo.getById(id);
         int count = 0;
@@ -120,7 +119,21 @@ public class PostService {
         return count;
     }
 
-    public int getPostsCount(){
-        return postRepo.getPosts(PageRequest.of(0, 2)).getSize();
+    public Page<Post> getPosts(int offset, int limit){
+        Pageable page = PageRequest.of(offset, limit);
+        Page<Post> posts = postRepo.findAll(page);
+        return posts;
+    }
+
+    public PostListResponse findByQuery(String query, int offset, int limit){
+        PostListResponse response = new PostListResponse();
+        Page<Post> posts = getPosts(offset, limit);
+        for(Post pst : posts){
+            if(pst.getText().contains(query.trim()) || pst.getTitle().contains(query.trim())) {
+                response.getPostsList().add(fillPostResponse(pst));
+            }
+        }
+        response.setCount(response.getPostsList().size());
+        return response;
     }
 }
