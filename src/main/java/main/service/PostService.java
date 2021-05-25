@@ -1,5 +1,6 @@
 package main.service;
 
+import main.api.response.CalendarResponse;
 import main.api.response.PostListResponse;
 import main.api.response.PostResponse;
 import main.api.response.UserIdNameResponse;
@@ -12,8 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +23,7 @@ public class PostService {
 
     public PostListResponse getPostResponse(String mode, int offset, int limit){
         PostListResponse postListResponse = new PostListResponse();
-        Page<Post> posts = getPosts(offset, limit);
+        Page<Post> posts = getPagedPosts(offset, limit);
         for(Post pst : posts){
             postListResponse.getPostsList().add(fillPostResponse(pst));
         }
@@ -119,21 +119,41 @@ public class PostService {
         return count;
     }
 
-    public Page<Post> getPosts(int offset, int limit){
-        Pageable page = PageRequest.of(offset, limit);
+    public Page<Post> getPagedPosts(int offset, int limit) {
+        Pageable page = PageRequest.of(offset/limit, limit);
         Page<Post> posts = postRepo.findAll(page);
         return posts;
     }
 
-    public PostListResponse findByQuery(String query, int offset, int limit){
+    public PostListResponse findByQuery(String query, String mode, int offset, int limit){
         PostListResponse response = new PostListResponse();
-        Page<Post> posts = getPosts(offset, limit);
-        for(Post pst : posts){
-            if(pst.getText().contains(query.trim()) || pst.getTitle().contains(query.trim())) {
+        //TODO решить проблему с пагинацией
+        Page<Post> pagedPosts = getPagedPosts(offset, limit);
+        for(Post pst : pagedPosts){
+            if(pst.getText().toLowerCase().contains(query.trim().toLowerCase()) ||
+                    pst.getTitle().toLowerCase().contains(query.trim().toLowerCase())) {
                 response.getPostsList().add(fillPostResponse(pst));
             }
         }
         response.setCount(response.getPostsList().size());
         return response;
     }
+
+    public CalendarResponse getPostsByYears(){
+        CalendarResponse response = new CalendarResponse();
+        Map<String, Integer> postMap = new HashMap<>();
+        Iterable<Post> posts = postRepo.findAll();
+       posts.forEach(it -> {
+           if(postMap.containsKey(it.getTime().toString().substring(0,10))) {
+            postMap.put(it.getTime().toString().substring(0, 10),
+                    postMap.get(it.getTime().toString().substring(0, 10)) +1);
+           } else postMap.put(it.getTime().toString().substring(0, 10), 1);
+       });
+       int[] year = new int [1];
+       year[0] = 2021;
+       response.setYears(year);
+       response.setPosts(postMap);
+       return response;
+    }
+
 }

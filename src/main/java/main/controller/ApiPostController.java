@@ -1,5 +1,6 @@
 package main.controller;
 
+import main.api.response.CalendarResponse;
 import main.api.response.PostListResponse;
 import main.api.response.TagResponse;
 import main.service.PostService;
@@ -43,8 +44,15 @@ public class ApiPostController {
             return postService.getPostListResponse("recent", offset, limit);
         }
         PostListResponse searchPostResponse = new PostListResponse();
-        searchPostResponse = postService.findByQuery(query, offset, limit);
+        searchPostResponse = postService.findByQuery(query,"time", offset, limit);
         return searchPostResponse;
+    }
+
+    @GetMapping("/calendar")
+    private CalendarResponse getCountPostsByYear(){
+        CalendarResponse response = new CalendarResponse();
+        response = postService.getPostsByYears();
+        return response;
     }
 
 }
