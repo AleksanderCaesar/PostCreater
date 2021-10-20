@@ -38,6 +38,8 @@ hs_err_pid*
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/
+target
 
 # Generated files
 .idea/**/contentModel.xml
@@ -143,3 +145,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/java,windows,jetbrains
+/.idea/
+/target/

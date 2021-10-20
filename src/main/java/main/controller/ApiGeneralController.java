@@ -1,10 +1,7 @@
 package main.controller;
 
-import main.api.response.CalendarResponse;
 import main.api.response.InitResponse;
 import main.api.response.SettingsResponse;
-import main.api.response.TagResponse;
-import main.service.PostService;
 import main.service.SettingsService;
 import main.service.TagService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,14 +25,11 @@ public class ApiGeneralController
 
     @GetMapping("/settings")
     private SettingsResponse settings(){
-
         return settingsService.getGlobalSettings();
     }
 
     @GetMapping("/init")
     private InitResponse init(){
-
         return initResponse;
     }
-
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class PostListResponse {
 
     @JsonProperty
-    private Integer count;
+    private Long count;
     @JsonProperty("posts")
     private List<PostResponse> postsList;
 
@@ -16,11 +16,11 @@ public class PostListResponse {
         postsList = new ArrayList<>();
     }
 
-    public Integer getCount() {
+    public Long getCount() {
         return count;
     }
 
-    public void setCount(Integer count) {
+    public void setCount(Long count) {
         this.count = count;
     }
 

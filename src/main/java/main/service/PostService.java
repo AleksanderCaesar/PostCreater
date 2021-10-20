@@ -23,11 +23,12 @@ public class PostService {
 
     public PostListResponse getPostResponse(String mode, int offset, int limit){
         PostListResponse postListResponse = new PostListResponse();
-        Page<Post> posts = getPagedPosts(offset, limit);
+        Pageable page = PageRequest.of(offset/limit, limit);
+        Page<Post> posts = postRepo.findByTextContaining("", page);
         for(Post pst : posts){
             postListResponse.getPostsList().add(fillPostResponse(pst));
         }
-        postListResponse.setCount((int) posts.getTotalElements());
+        postListResponse.setCount(posts.getTotalElements());
 
         return postListResponse;
     }
@@ -35,7 +36,7 @@ public class PostService {
     public PostResponse fillPostResponse(Post pst) {
         PostResponse postResponse = new PostResponse();
         postResponse.setId(pst.getId());
-        postResponse.setTimestamp(pst.getTime().getTime());
+        postResponse.setTimestamp(pst.getTime().getTime()/1000);
         UserIdNameResponse user = new UserIdNameResponse();
         user.setId(pst.getUser().getId());
         user.setName(pst.getUser().getName());
@@ -119,23 +120,23 @@ public class PostService {
         return count;
     }
 
-    public Page<Post> getPagedPosts(int offset, int limit) {
-        Pageable page = PageRequest.of(offset/limit, limit);
-        Page<Post> posts = postRepo.findAll(page);
-        return posts;
-    }
-
     public PostListResponse findByQuery(String query, String mode, int offset, int limit){
         PostListResponse response = new PostListResponse();
+        Pageable page = PageRequest.of(offset/limit, limit);
+        Page<Post> pagedPosts = postRepo.findByTextContaining(query, page);
         //TODO решить проблему с пагинацией
-        Page<Post> pagedPosts = getPagedPosts(offset, limit);
-        for(Post pst : pagedPosts){
-            if(pst.getText().toLowerCase().contains(query.trim().toLowerCase()) ||
-                    pst.getTitle().toLowerCase().contains(query.trim().toLowerCase())) {
-                response.getPostsList().add(fillPostResponse(pst));
-            }
-        }
-        response.setCount(response.getPostsList().size());
+        response.setPostsList(pagedPosts
+                        .stream()
+                        .map(this::fillPostResponse)
+                        .collect(Collectors.toList()));
+
+//        for(Post pst : pagedPosts){
+//            if(pst.getText().toLowerCase().contains(query.trim().toLowerCase()) ||
+//                    pst.getTitle().toLowerCase().contains(query.trim().toLowerCase())) {
+//                response.getPostsList().add(fillPostResponse(pst));
+//            }
+//        }
+        response.setCount(pagedPosts.getTotalElements());
         return response;
     }
 

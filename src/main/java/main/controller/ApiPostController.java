@@ -15,19 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class ApiPostController {
-    @Autowired
-    private PostService postService;
-    @Autowired
-    private TagService tagService;
+    private final PostService postService;
+    private final TagService tagService;
 
-    public ApiPostController(PostService postService) {
+    public ApiPostController(PostService postService, TagService tagService) {
         this.postService = postService;
+        this.tagService = tagService;
     }
 
     @GetMapping("/post")
-    private PostListResponse getPosts(@RequestParam("mode") String mode,
-                                      @RequestParam("offset") int offset,
-                                      @RequestParam("limit") int limit) {
+    private PostListResponse getPosts(@RequestParam(value = "mode", required = false, defaultValue = "recent") String mode,
+                                      @RequestParam(value = "offset", required = false, defaultValue = "0") int offset,
+                                      @RequestParam(value = "limit", required = false, defaultValue = "10") int limit) {
         return postService.getPostListResponse(mode, offset, limit);
     }
     @GetMapping("/tag")
@@ -50,9 +49,7 @@ public class ApiPostController {
 
     @GetMapping("/calendar")
     private CalendarResponse getCountPostsByYear(){
-        CalendarResponse response = new CalendarResponse();
-        response = postService.getPostsByYears();
-        return response;
+        return postService.getPostsByYears();
     }
 
 }
