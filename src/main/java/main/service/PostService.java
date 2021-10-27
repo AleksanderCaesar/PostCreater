@@ -6,25 +6,46 @@ import main.api.response.PostResponse;
 import main.api.response.UserIdNameResponse;
 import main.model.Post;
 import main.model.PostVotes;
+import main.model.TagToPost;
 import main.repos.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class PostService {
-    @Autowired
-    private PostRepo postRepo;
+    private final PostRepo postRepo;
 
-    public PostListResponse getPostResponse(String mode, int offset, int limit){
+    public PostService(PostRepo postRepo) {
+        this.postRepo = postRepo;
+    }
+
+    public PostListResponse getPostListResponse(String mode, int offset, int limit) {
         PostListResponse postListResponse = new PostListResponse();
+
         Pageable page = PageRequest.of(offset/limit, limit);
-        Page<Post> posts = postRepo.findByTextContaining("", page);
+        Page<Post> posts = postRepo.findAllPostRecent(page);
+        if(mode.equals("popular")) {
+            posts = postRepo.findAllSortedByComments(page);
+        }
+        if(mode.equals("best")) {
+            posts = postRepo.findAllSortedByLikes(page);
+        }
+        if(mode.equals("recent")) {
+            posts = postRepo.findAllPostRecent(page);
+        }
+        if(mode.equals("early")) {
+            posts = postRepo.findAllPostEarly(page);
+        }
+
         for(Post pst : posts){
             postListResponse.getPostsList().add(fillPostResponse(pst));
         }
@@ -49,59 +70,6 @@ public class PostService {
         return postResponse;
     }
 
-    public PostListResponse getPostListResponse(String mode, int offset, int limit) {
-    PostListResponse postListResponse = getPostResponse(mode, offset, limit);
-
-        if(postListResponse.getPostsList().isEmpty()){
-        return new PostListResponse();
-    }
-        else return sortByParam(postListResponse, mode, offset, limit) ;
-}
-
-    public PostListResponse sortByParam(PostListResponse postListResponse,
-                                        String mode, int offset, int limit){
-        if(mode.equals("popular")){
-            Collections.sort(postListResponse.getPostsList(), new Comparator<PostResponse>() {
-                @Override
-                public int compare(PostResponse o1, PostResponse o2) {
-                    if(o1.getCommentCount() <= o2.getCommentCount()) return    1;
-                    else  return -1;
-                }
-            });
-        }
-        if(mode.equals("best")){
-            Collections.sort(postListResponse.getPostsList(), new Comparator<PostResponse>() {
-                @Override
-                public int compare(PostResponse o1, PostResponse o2) {
-                    if(o1.getLikeCount() <= o2.getLikeCount()) return    1;
-                    else  return -1;
-                }
-            });
-        }
-        if(mode.equals("recent")){
-            postListResponse.getPostsList().sort(new Comparator<PostResponse>() {
-                @Override
-                public int compare(PostResponse o1, PostResponse o2) {
-                    if(o1.getTimestamp() <= o2.getTimestamp()) return    1;
-                    else  return -1;
-                }
-            });
-        }
-        if(mode.equals("early")){
-            postListResponse.getPostsList().sort(new Comparator<PostResponse>() {
-                @Override
-                public int compare(PostResponse o1, PostResponse o2) {
-                    if(o1.getTimestamp() >= o2.getTimestamp()) return    1;
-                    else  return -1;
-                }
-            });
-        }
-        postListResponse.setPostsList(postListResponse.getPostsList()
-                .stream().limit(limit)
-                .collect(Collectors.toList()));
-        return postListResponse;
-    }
-
     public Integer getLikes(Integer id) {
         Post post = postRepo.getById(id);
         int count = 0;
@@ -122,25 +90,44 @@ public class PostService {
 
     public PostListResponse findByQuery(String query, String mode, int offset, int limit){
         PostListResponse response = new PostListResponse();
-        Pageable page = PageRequest.of(offset/limit, limit);
+        Pageable page = PageRequest.of(offset/limit, limit, Sort.by(mode));
         Page<Post> pagedPosts = postRepo.findByTextContaining(query, page);
-        //TODO решить проблему с пагинацией
         response.setPostsList(pagedPosts
                         .stream()
                         .map(this::fillPostResponse)
                         .collect(Collectors.toList()));
-
-//        for(Post pst : pagedPosts){
-//            if(pst.getText().toLowerCase().contains(query.trim().toLowerCase()) ||
-//                    pst.getTitle().toLowerCase().contains(query.trim().toLowerCase())) {
-//                response.getPostsList().add(fillPostResponse(pst));
-//            }
-//        }
         response.setCount(pagedPosts.getTotalElements());
         return response;
     }
 
-    public CalendarResponse getPostsByYears(){
+    public PostListResponse findByDate(String time, int offset, int limit) throws ParseException {
+        Date onlyDate = new SimpleDateFormat("yyyy-MM-dd").parse(time);
+        PostListResponse response = new PostListResponse();
+        Pageable page = PageRequest.of(offset/limit, limit);
+        Page<Post> pagedPosts = postRepo.findPostsByDate(onlyDate.toInstant(), page);
+        response.setPostsList(pagedPosts
+                .stream()
+                .map(this::fillPostResponse)
+                .collect(Collectors.toList()));
+        response.setCount(pagedPosts.getTotalElements());
+        return response;
+    }
+
+    public PostListResponse findByTag(String tag, int offset, int limit) throws ParseException {
+        PostListResponse response = new PostListResponse();
+        Pageable page = PageRequest.of(offset/limit, limit);
+        //TODO имя тэга довльно глубоко зарыто в классах, наверно тут  лучше  написать метод поиска на стороне sql запроса
+
+//        Page<Post> pagedPosts = postRepo.findPostByTagToPosts(tag, page);
+//        response.setPostsList(pagedPosts
+//                .stream()
+//                .map(this::fillPostResponse)
+//                .collect(Collectors.toList()));
+//        response.setCount(pagedPosts.getTotalElements());
+        return response;
+    }
+
+    public CalendarResponse getPostsByYears() {
         CalendarResponse response = new CalendarResponse();
         Map<String, Integer> postMap = new HashMap<>();
         Iterable<Post> posts = postRepo.findAll();
@@ -156,5 +143,4 @@ public class PostService {
        response.setPosts(postMap);
        return response;
     }
-
 }

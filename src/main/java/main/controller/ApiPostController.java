@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+import java.util.Date;
+
 
 @RestController
 @RequestMapping("/api")
@@ -38,10 +41,6 @@ public class ApiPostController {
     private PostListResponse getSearchPost(@RequestParam("query") String query,
                                              @RequestParam("offset") int offset,
                                              @RequestParam("limit") int limit){
-
-        if(query.isEmpty() || query.replace(" ","").isEmpty() ){
-            return postService.getPostListResponse("recent", offset, limit);
-        }
         PostListResponse searchPostResponse = new PostListResponse();
         searchPostResponse = postService.findByQuery(query,"time", offset, limit);
         return searchPostResponse;
@@ -50,6 +49,26 @@ public class ApiPostController {
     @GetMapping("/calendar")
     private CalendarResponse getCountPostsByYear(){
         return postService.getPostsByYears();
+    }
+
+    @GetMapping("/post/byDate")
+    private PostListResponse getPostsByDate(@RequestParam("date") String time,
+                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset,
+                                           @RequestParam(value = "limit", required = false, defaultValue = "10") int limit) throws ParseException {
+
+        PostListResponse searchPostByDate = new PostListResponse();
+        searchPostByDate = postService.findByDate(time, offset, limit);
+        return searchPostByDate;
+    }
+
+    @GetMapping("/post/byTag")
+    private PostListResponse getPostsByTag(@RequestParam("tag") String tag,
+                                            @RequestParam("offset") int offset,
+                                            @RequestParam("limit") int limit) throws ParseException {
+
+        PostListResponse searchPostByTag = new PostListResponse();
+        searchPostByTag = postService.findByTag(tag, offset, limit);
+        return searchPostByTag;
     }
 
 }
